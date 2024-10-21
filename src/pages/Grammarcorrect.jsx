@@ -1,8 +1,10 @@
 import { useState } from "react";
+import axios from "axios";
 
 const Grammarcorrect = () => {
-    const [text, setText] = useState("");
+    const [inputtext, setText] = useState("");
     const [wordCount, setWordCount] = useState(0);
+    const [correctedText, setCorrectedText] = useState("");
     const wordLimit = 500;
 
     const countWords = (text) => {
@@ -21,6 +23,24 @@ const Grammarcorrect = () => {
         }).catch((err) => {
           alert("Failed to copy text: " + err);
         });
+      };
+
+      const handleOutput = async () => {
+        try {
+          const response = await axios.post('http://0.0.0.0:8000/check-grammar', {
+            text: inputtext  
+          });
+      
+          // Assuming the response matches the GrammarCheckResponse model
+          const { original_text, corrected_text } = response.data;
+      
+          // Update your state or do something with the response
+          setCorrectedText(corrected_text);
+        } catch (error) {
+          console.error('Error checking grammar:', error);
+          // Handle the error (e.g., show an error message to the user)
+        //   setErrorMessage('Failed to check grammar. Please try again.');
+        }
       };
 
     return (
@@ -43,9 +63,9 @@ const Grammarcorrect = () => {
             <div className="w-full md:p-12 p-[5%] md:pb-0">
                 <p className=" font-extrabold md:text-4xl text-2xl">TRY NOW: AI-Powered Grammar Checker</p>
                 <div className="h-9 md:h-auto w-full flex flex-row-reverse md:justify-start md:mb-[2%] md:mt-[1%] mt-[4%] mb-[4%] text-sm md:text-base">
-                    <button className=" bg-blue-600 text-white md:px-4 md:py-2 p-1 rounded-md hover:text-blue-600 hover:bg-white border-blue-600 border-2">CHECK YOUR TEXT</button>
+                    <button onClick={handleOutput} className=" bg-blue-600 text-white md:px-4 md:py-2 p-1 rounded-md hover:text-blue-600 hover:bg-white border-blue-600 border-2">CHECK YOUR TEXT</button>
                 </div>
-                <textarea className="h-96 w-[100%] p-3 border-black border-2 rounded-lg  mb-[1%] resize-none" placeholder="ENTER OR PASTE YOUR TEXT HERE" value={text} onChange={handleChange}></textarea>
+                <textarea className="h-96 w-[100%] p-3 border-black border-2 rounded-lg  mb-[1%] resize-none" placeholder="ENTER OR PASTE YOUR TEXT HERE" value={inputtext} onChange={handleChange}></textarea>
                 <p className=""><b>Word Count Limit:</b> {wordCount}/{wordLimit}</p>
                 {wordCount > wordLimit && (
                     <p className="text-red-500">You have exceeded the word limit!</p>
@@ -56,7 +76,7 @@ const Grammarcorrect = () => {
                     <p className="text-2xl font-semibold md:mb-2 mb-[4%]">OUTPUT</p>
                     <button onClick={handleCopy} className=" bg-blue-600 text-white md:px-4 md:py-2 p-1 rounded-md hover:text-blue-600 hover:bg-white border-blue-600 border-2">COPY TEXT</button>
                 </div>
-                <textarea className="w-[100%] p-3 border-black border-2 rounded-lg mb-[1%] resize-none" disabled rows={4} placeholder="OUTPUT WILL BE SHOWN HERE"></textarea>
+                <textarea className="w-[100%] p-3 border-black border-2 rounded-lg mb-[1%] resize-none" disabled rows={4} value={correctedText} placeholder="OUTPUT WILL BE SHOWN HERE"></textarea>
             </div>
         </>
     )
