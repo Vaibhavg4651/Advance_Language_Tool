@@ -11,9 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
-
-env
-.env
+.env.local
+*.pyc
+__pycache__/
+migratons/
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +26,11 @@ env
 *.njsproj
 *.sln
 *.sw?
+
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
